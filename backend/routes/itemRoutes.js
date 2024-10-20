@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { getAllItems, createItem, deleteItem } from '../controllers/itemController';
+import { getAllItems, createItem, deleteItem, updateItem } from '../controllers/itemController.js';
 const router = Router();
 
 router.get('/', getAllItems);
 router.post('/', createItem);
 router.delete('/:id', deleteItem);
+router.put('/:id', updateItem);
 
-module.exports = router;
+export default router;
 

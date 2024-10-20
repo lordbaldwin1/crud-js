@@ -1,10 +1,13 @@
 import express, { json } from 'express';
 import cors from 'cors';
 import knex from 'knex';
-require('dotenv').config();
+import dotenv from 'dotenv';
+import itemRoutes from './routes/itemRoutes.js';
 
-import itemRoutes from './routes/itemRoutes';
+// load environment variables
+dotenv.config();
 
+// creates express server
 const app = express();
 const PORT = process.env.PORT || 5000;
 
