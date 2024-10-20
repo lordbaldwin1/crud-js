@@ -1,4 +1,5 @@
-## JS CRUD
+# JS CRUD
 
-Just starting this project to explore JS frontend and backend.
-React.js, Axios, Express.js, Knex, PostgreSQL, Vite
+Starting this project to explore JS frontend and backend.
+## Using
+React.js, Axios, Express.js, Knex, PostgreSQL, Vite.
