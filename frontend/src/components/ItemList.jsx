@@ -41,6 +41,16 @@ function ItemList() {
       }
     };
 
+    const handleCreate = async () => {
+      try {
+        const response = await createItem(newItemName);
+        setItems([...items, response.data]);
+        setNewItemName('');
+      } catch (error) {
+        console.error('Error creating item:', error);
+      }
+    };
+
     const refreshItems = async () => {
       try {
         const response = await getItems();
@@ -58,15 +68,6 @@ function ItemList() {
         console.error('Error fetching items: ', error);
       }
     };
-
-    const handleCreate = async () => {
-      try {
-        const response = await createItem(newItemName);
-        setNewItemName('');
-      } catch (error) {
-        console.error('Error creating item:', error);
-      }
-    }
 
     const handleDelete = async (id) => {
       try {
