@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getItems, createItem, deleteItem, updateItem } from '../services/ItemService';
+import { getItems, createItem, deleteItem, updateItem, getItemById } from '../services/ItemService';
 import '../App.css';
 
 function ItemList() {
@@ -10,10 +10,10 @@ function ItemList() {
     const [editingItemId, setEditingItemId] = useState(null);
     const [editItemName, setEditItemName] = useState('');
 
-    // CALLS ONCE ON MOUNT
+    // CALLS ONCE ON MOUNT OR WHEN items array is changed
     useEffect(() => {
       fetchItems();
-    }, [items]);
+    }, []);
 
     const handleEditClick = (item) => {
       setEditingItemId(item.id);
@@ -23,15 +23,23 @@ function ItemList() {
     const handleSaveClick = async () => {
       if (editingItemId) {
         try {
-          const response = await updateItem(editingItemId, editItemName);
-          setItems(items.map(item => (item.id === editingItemId ? response.data : item)));
+          // First, update the item on the server
+          await updateItem(editingItemId, editItemName);
+    
+          // Update the local state without an extra API call
+          //
+          setItems(items.map(item => (
+            item.id === editingItemId ? { ...item, name: editItemName } : item
+          )));
+    
+          // Clear the editing state to exit edit mode
           setEditingItemId(null);
-          setEditItemName('');
+          setEditItemName('');  // Clear the input field after save
         } catch (error) {
           console.error('Error updating item:', error);
         }
       }
-    }
+    };
 
     const refreshItems = async () => {
       try {
@@ -66,19 +74,6 @@ function ItemList() {
         setItems(items.filter(item => item.id !== id));
       } catch (error) {
         console.log('Error deleting item:', error);
-      }
-    };
-
-    const handleUpdate = async () => {
-      if (itemIdToUpdate) {
-        try {
-          const response = await updateItem(itemIdToUpdate, updatedItemName);
-          setItems(items.map(item => (item.id === itemIdToUpdate ? response.data : item)));
-          setItemIdToUpdate('');
-          setUpdatedItemName('');
-        } catch (error) {
-          console.error('Error updating item:', error);
-        }
       }
     };
 
