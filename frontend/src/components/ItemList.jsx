@@ -1,25 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { getItems, createItem, deleteItem, updateItem } from '../services/ItemService';
+import '../App.css';
 
 function ItemList() {
     const [items, setItems] = useState([]);
     const [newItemName, setNewItemName] = useState('');
     const [updatedItemName, setUpdatedItemName] = useState('');
     const [itemIdToUpdate, setItemIdToUpdate] = useState(null);
+    const [editingItemId, setEditingItemId] = useState(null);
+    const [editItemName, setEditItemName] = useState('');
 
-    /* MORE COMPLICATED WAY USING AXIOS FUNCTIONS
-    useEffect(() => {
-        // axios function returns promise
-        // then() is called when the promise is resolved
-        // inside then is a callback takes in response
-        // and updates items with response.data
-        getItems().then(response => setItems(response.data));
-    }, []); // called once on mount
-    */
     // CALLS ONCE ON MOUNT
     useEffect(() => {
       fetchItems();
-    }, []);
+    }, [items]);
+
+    const handleEditClick = (item) => {
+      setEditingItemId(item.id);
+      setEditItemName(item.name);
+    };
+
+    const handleSaveClick = async () => {
+      if (editingItemId) {
+        try {
+          const response = await updateItem(editingItemId, editItemName);
+          setItems(items.map(item => (item.id === editingItemId ? response.data : item)));
+          setEditingItemId(null);
+          setEditItemName('');
+        } catch (error) {
+          console.error('Error updating item:', error);
+        }
+      }
+    }
 
     const refreshItems = async () => {
       try {
@@ -39,15 +51,6 @@ function ItemList() {
       }
     };
 
-    /* MORE COMPLICATED WAY USING AXIOS FUNCTIONS
-    const handleCreate = () => {
-        createItem(newItemName).then(response => {
-            setItems([...items, response.data]);
-            setNewItemName('');
-        });
-    };
-    */
-
     const handleCreate = async () => {
       try {
         const response = await createItem(newItemName);
@@ -56,17 +59,6 @@ function ItemList() {
         console.error('Error creating item:', error);
       }
     }
-
-    /* USES AXIOS FUNCTIONS?
-    const handleDelete = (id) => {
-        deleteItem(id).then(() => {
-            // for each item(index) in items see if item.id
-            // is not equal to id, if that is true(they don't match)
-            // then include in new array, else exclude it
-            setItems(items.filter(item => item.id !== id));
-        });
-    };
-    */
 
     const handleDelete = async (id) => {
       try {
@@ -77,21 +69,12 @@ function ItemList() {
       }
     };
 
-    /*
-    const handleUpdate = (id) => {
-      createItem(newItemName).then(response => {
-          setItems([...items, response.data]);
-          setNewItemName('');
-      });
-  };
-  */
-
     const handleUpdate = async () => {
       if (itemIdToUpdate) {
         try {
           const response = await updateItem(itemIdToUpdate, updatedItemName);
           setItems(items.map(item => (item.id === itemIdToUpdate ? response.data : item)));
-          setItemIdToUpdate(null);
+          setItemIdToUpdate('');
           setUpdatedItemName('');
         } catch (error) {
           console.error('Error updating item:', error);
@@ -100,31 +83,65 @@ function ItemList() {
     };
 
     return (
-        <div>
-          <h1>Items List</h1>
-          <ul>
+      <div>
+        <h1>Items List</h1>
+    
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
             {items.map(item => (
-              <li key={item.id}>
-                {item.name}
-                <button onClick={() => handleDelete(item.id)}>Delete</button>
-              </li>
+              <tr key={item.id}>
+                <td>{item.id}</td>
+    
+                <td>
+                  {editingItemId === item.id ? (
+                    <input
+                      type="text"
+                      value={editItemName}
+                      onChange={e => setEditItemName(e.target.value)}
+                    />
+                  ) : (
+                    item.name
+                  )}
+                </td>
+    
+                <td>
+                  {editingItemId === item.id ? (
+                    <>
+                      <button onClick={handleSaveClick}>Save</button>
+                      <button onClick={() => setEditingItemId(null)}>Cancel</button>
+                    </>
+                  ) : (
+                    <button onClick={() => handleEditClick(item)}>Edit</button>
+                  )}
+                </td>
+                <td>
+                    <button onClick={() => handleDelete(item.id)}>Delete</button>
+                </td>
+              </tr>
             ))}
-          </ul>
+          </tbody>
+        </table>
+    
+        <div>
           <input
             value={newItemName}
             onChange={e => setNewItemName(e.target.value)}
             placeholder="New item name"
           />
-          <input
-            value={updatedItemName}
-            onChange={(e) => setUpdatedItemName(e.target.value)}
-            placeholder="Updated item name"
-          />
-          <button onClick={handleUpdate}>Update Item</button>
-          <button onClick={handleCreate}>Add Item</button>
-          <button onClick={refreshItems}>Refresh</button>
         </div>
-      );
+    
+        <button onClick={handleCreate}>Add Item</button>
+        <button onClick={refreshItems}>Refresh</button>
+      </div>
+    );
+    
 }
 
 export default ItemList;
