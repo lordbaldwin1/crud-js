@@ -11,7 +11,7 @@ export async function getAllItems(req, res) {
     } catch (err) {
         res.status(500).json({ message: 'Error fetching items' });
     }
-}
+};
 
 // takes in INSERT request, req.body contains data sent
 // in that request, inserts that data into items table
@@ -26,7 +26,7 @@ export async function createItem(req, res) {
     } catch (err) {
         res.status(500).json({ message: 'Error creating item' });
     }
-}
+};
 
 // deletes item from db based on id URL parameter
 // deletes item from items table where id matches the given
@@ -39,7 +39,7 @@ export async function deleteItem(req, res) {
     } catch (err) {
         res.status(500).json({ message: 'Error deleting item' });
     }
-}
+};
 
 export async function updateItem(req, res) {
     const { id } = req.params;
@@ -55,4 +55,4 @@ export async function updateItem(req, res) {
     } catch (err) {
         res.status(500).json({ message: 'Error updating item' });
     }
-}
+};
