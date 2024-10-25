@@ -5,11 +5,11 @@ import '../App.css';
 function ItemList() {
     const [items, setItems] = useState([]);
     const [newItemName, setNewItemName] = useState('');
-    const [updatedItemName, setUpdatedItemName] = useState('');
-    const [itemIdToUpdate, setItemIdToUpdate] = useState(null);
     const [editingItemId, setEditingItemId] = useState(null);
     const [editItemName, setEditItemName] = useState('');
     const [deleteItemId, setDeleteItemId] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchArray, setSearchArray] = useState([]);
 
     // CALLS ONCE ON MOUNT OR WHEN items array is changed
     useEffect(() => {
@@ -85,10 +85,33 @@ function ItemList() {
       }
     };
 
+    /* OLD FUNCTION FOR SEARCHING
+    const handleSearch = async () => {
+      setSearchConfirm(searchTerm);
+      setSearchArray(items.filter(item => item.name.includes(searchTerm)));
+    };
+    */
+
+    const handleClearSearch = async () => {
+      setSearchTerm('');
+    }
+
+    useEffect(() => {
+      setSearchArray(items.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase())));
+    }, [searchTerm, items]);
+
     return (
       <div>
         <h1>Items List</h1>
-    
+        <input 
+          type="text"
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search items..."
+          />
+        <button onClick={handleClearSearch}>Clear Search</button>
+
+        {searchArray.length > 0 ? (
         <table>
           <thead>
             <tr>
@@ -98,7 +121,7 @@ function ItemList() {
             </tr>
           </thead>
           <tbody>
-            {items.map(item => (
+            {searchArray.map(item => (
               <tr key={item.id}>
                 <td>{item.id}</td>
     
@@ -138,7 +161,10 @@ function ItemList() {
             ))}
           </tbody>
         </table>
-    
+        ) : (
+          <h1>No items found</h1>
+        )};
+
         <div>
           <input
             value={newItemName}
