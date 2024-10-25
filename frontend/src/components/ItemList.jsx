@@ -9,6 +9,7 @@ function ItemList() {
     const [itemIdToUpdate, setItemIdToUpdate] = useState(null);
     const [editingItemId, setEditingItemId] = useState(null);
     const [editItemName, setEditItemName] = useState('');
+    const [deleteItemId, setDeleteItemId] = useState(null);
 
     // CALLS ONCE ON MOUNT OR WHEN items array is changed
     useEffect(() => {
@@ -69,12 +70,18 @@ function ItemList() {
       }
     };
 
-    const handleDelete = async (id) => {
-      try {
-        await deleteItem(id);
-        setItems(items.filter(item => item.id !== id));
-      } catch (error) {
-        console.log('Error deleting item:', error);
+    const handleDeleteClick = async (item) => {
+      setDeleteItemId(item.id);
+    };
+
+    const handleDelete = async () => {
+      if (deleteItemId) {
+        try {
+          await deleteItem(deleteItemId);
+          setItems(items.filter(item => item.id !== deleteItemId));
+        } catch (error) {
+          console.error('Error deleting item:', error);
+        }
       }
     };
 
@@ -118,7 +125,14 @@ function ItemList() {
                   )}
                 </td>
                 <td>
-                    <button onClick={() => handleDelete(item.id)}>Delete</button>
+                  {deleteItemId === item.id ? (
+                    <>
+                      <button onClick={handleDelete}>Yes</button>
+                      <button onClick={() => setDeleteItemId(null)}>No</button>
+                    </>
+                  ) : (
+                    <button onClick={() => handleDeleteClick(item)}>Delete</button>
+                  )}
                 </td>
               </tr>
             ))}
