@@ -4,7 +4,7 @@ This project is designed to explore full-stack JavaScript development with a foc
 
 ## ⚙️ Tech Stack
 - **Frontend**: React.js, Axios, Vite
-- **Backend**: Express.js, Knex.js
+- **Backend**: Express.js, Knex.js, Node.js
 - **Database**: PostgreSQL
 
 ## 🚀 Project Overview
